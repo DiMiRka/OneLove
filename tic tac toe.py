@@ -10,29 +10,45 @@ def draw_field():  # Растоновка поля
         print(row_str)
         print(' -------------- ')
 
+def ask():  # Запрос координат для хода игрока
+    while True:
+        move = input('Введите координаты: ').split()  # Запрашиваем координаты
+
+        if len(move) != 2:  # Проверяем наличие 2-х координат
+            print('Введите 2 координаты')
+            continue
+        x, y = move
+
+        if not(x.isdigit()) or not (y.isdigit()):  # Проверяем, что в координаты ввели числа
+            print('Введите числовые координты от 0 до 2')
+            continue
+        x, y = int(x), int(y)
+
+        if not (0 <= x <= 2) or not (0 <= y <= 2) :  # Проверяем, что координаты входят в наш диапазон поля
+            print('Координаты выходят за диапазон поля, введите координаты повторно')
+            continue
+
+        if field[x][y] != '-':  # Проверяем, что ячейка еще не занята
+            print('Ячейка занята, введите координаты повторно')
+            continue
+        return x,y
 
 draw_field()  # Расставляем поле
 print('Для хода введите номер столбца и строки через пробел соответственно')
 
 while True:  # Процесс игры
-    cross = True
-    while cross:
-        move_cross = (list(map(int, input('Ход крестиков: ').split())))  # Запрашиваем координаты
-        one, two = move_cross[0], move_cross[1]  # Присваиваем координаты переменным
-        if field[one][two] == '-':
-            field[one][two] = 'x'  # Устанавливаем крестик в веденные координаты
-            cross = False
-        else:
-            print('Ячейка занята, введите координаты повторно')
+    print('Ходят крестики')
+    x,y = ask()
+    field[x][y] = 'X'
     draw_field()  # Расставляем поле
-    if any([field[0] == ['x', 'x', 'x'],  # Проверяем условия победы крестиков
-            field[1] == ['x', 'x', 'x'],
-            field[2] == ['x', 'x', 'x'],
-            field[0][0] == 'x' and field[1][0] == 'x' and field[2][0] == 'x',
-            field[0][1] == 'x' and field[1][1] == 'x' and field[2][1] == 'x',
-            field[0][2] == 'x' and field[1][2] == 'x' and field[2][2] == 'x',
-            field[0][0] == 'x' and field[1][1] == 'x' and field[2][2] == 'x',
-            field[0][2] == 'x' and field[1][1] == 'x' and field[2][0] == 'x']):
+    if any([field[0] == ['X', 'X', 'X'],  # Проверяем условия победы крестиков
+            field[1] == ['X', 'X', 'X'],
+            field[2] == ['X', 'X', 'X'],
+            field[0][0] == 'X' and field[1][0] == 'X' and field[2][0] == 'X',
+            field[0][1] == 'X' and field[1][1] == 'X' and field[2][1] == 'X',
+            field[0][2] == 'X' and field[1][2] == 'X' and field[2][2] == 'X',
+            field[0][0] == 'X' and field[1][1] == 'X' and field[2][2] == 'X',
+            field[0][2] == 'X' and field[1][1] == 'X' and field[2][0] == 'X']):
         print('Крестики выиграли!')
         new_game = input('Желаете начать новую игру? Y - да, N - нет: ')  # Запрашиваем начало новой игры
         if new_game == 'Y':
@@ -50,25 +66,18 @@ while True:  # Процесс игры
             continue
         else:
             break
-    zero = True
-    while zero:
-        move_zero = (list(map(int, input('Ход ноликов: ').split())))  # Запрашиваем координаты
-        one, two = move_zero[0], move_zero[1]  # Присваиваем координаты переменным
-        if field[one][two] == '-':
-            field[one][two] = 'o'  # Устанавливаем нолик в веденные координаты
-            zero = False
-        else:
-            print('Выбранная ячейка уже занята')
-        continue
+    print('Ходят нолики')
+    x, y = ask()
+    field[x][y] = 'O'
     draw_field()  # Расставляем поле
-    if any([field[0] == ['o', 'o', 'o'],  # Проверяем условия победы ноликов
-            field[1] == ['o', 'o', 'o'],
-            field[2] == ['o', 'o', 'o'],
-            field[0][0] == 'o' and field[1][0] == 'o' and field[2][0] == 'o',
-            field[0][1] == 'o' and field[1][1] == 'o' and field[2][1] == 'o',
-            field[0][2] == 'o' and field[1][2] == 'o' and field[2][2] == 'o',
-            field[0][0] == 'o' and field[1][1] == 'o' and field[2][2] == 'o',
-            field[0][2] == 'o' and field[1][1] == 'o' and field[2][0] == 'o']):
+    if any([field[0] == ['O', 'O', 'O'],  # Проверяем условия победы ноликов
+            field[1] == ['O', 'O', 'O'],
+            field[2] == ['O', 'O', 'O'],
+            field[0][0] == 'O' and field[1][0] == 'O' and field[2][0] == 'O',
+            field[0][1] == 'O' and field[1][1] == 'O' and field[2][1] == 'O',
+            field[0][2] == 'O' and field[1][2] == 'O' and field[2][2] == 'O',
+            field[0][0] == 'O' and field[1][1] == 'O' and field[2][2] == 'O',
+            field[0][2] == 'O' and field[1][1] == 'O' and field[2][0] == 'O']):
         print('Нолики выиграли!')
         new_game = input('Желаете начать новую игру? Y - да, N - нет: ')  # Запрашиваем начало новой игры
         if new_game == 'Y':
