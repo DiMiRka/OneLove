@@ -33,6 +33,26 @@ def ask():  # Запрос координат для хода игрока
             continue
         return x,y
 
+def end_game():
+    win = [((0, 0), (0, 1), (0, 2)), ((1, 0), (1, 1), (1, 2)),
+           ((2, 0), (2, 1), (2, 2)), ((0, 0), (1, 0), (2, 0)),
+           ((0, 1), (1, 1), (2, 1)), ((0, 2), (1, 2), (2, 2)),
+           ((0, 0), (1, 1), (2, 2)), ((0, 2), (1, 1), (2, 0))]
+    for a in win:
+        test_win =[]
+        for b in a:
+            test_win.append(field[b[0]][b[1]])
+        if test_win == ['X', 'X', 'X']:
+            print('Крестики выиграли!')
+            return True
+        if test_win == ['O', 'O', 'O']:
+            print('Нолики выиграли!')
+            return True
+
+    if '-' not in field[0] and '-' not in field[1] and '-' not in field[2]:
+        print('Ничья!')
+        return True
+
 draw_field()  # Расставляем поле
 print('Для хода введите номер столбца и строки через пробел соответственно')
 
@@ -41,15 +61,7 @@ while True:  # Процесс игры
     x,y = ask()
     field[x][y] = 'X'
     draw_field()  # Расставляем поле
-    if any([field[0] == ['X', 'X', 'X'],  # Проверяем условия победы крестиков
-            field[1] == ['X', 'X', 'X'],
-            field[2] == ['X', 'X', 'X'],
-            field[0][0] == 'X' and field[1][0] == 'X' and field[2][0] == 'X',
-            field[0][1] == 'X' and field[1][1] == 'X' and field[2][1] == 'X',
-            field[0][2] == 'X' and field[1][2] == 'X' and field[2][2] == 'X',
-            field[0][0] == 'X' and field[1][1] == 'X' and field[2][2] == 'X',
-            field[0][2] == 'X' and field[1][1] == 'X' and field[2][0] == 'X']):
-        print('Крестики выиграли!')
+    if end_game():
         new_game = input('Желаете начать новую игру? Y - да, N - нет: ')  # Запрашиваем начало новой игры
         if new_game == 'Y':
             field = [['-'] * 3 for i in range(3)]  # Обновляем пустые ячейки
@@ -70,15 +82,7 @@ while True:  # Процесс игры
     x, y = ask()
     field[x][y] = 'O'
     draw_field()  # Расставляем поле
-    if any([field[0] == ['O', 'O', 'O'],  # Проверяем условия победы ноликов
-            field[1] == ['O', 'O', 'O'],
-            field[2] == ['O', 'O', 'O'],
-            field[0][0] == 'O' and field[1][0] == 'O' and field[2][0] == 'O',
-            field[0][1] == 'O' and field[1][1] == 'O' and field[2][1] == 'O',
-            field[0][2] == 'O' and field[1][2] == 'O' and field[2][2] == 'O',
-            field[0][0] == 'O' and field[1][1] == 'O' and field[2][2] == 'O',
-            field[0][2] == 'O' and field[1][1] == 'O' and field[2][0] == 'O']):
-        print('Нолики выиграли!')
+    if end_game():
         new_game = input('Желаете начать новую игру? Y - да, N - нет: ')  # Запрашиваем начало новой игры
         if new_game == 'Y':
             field = [['-'] * 3 for i in range(3)]  # Обновляем пустые ячейки
