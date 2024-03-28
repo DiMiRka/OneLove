@@ -1,8 +1,4 @@
-print('Давайте же начнём игру!')
-field = [['-'] * 3 for i in range(3)]  # Создаём пустые ячейки
-
-
-def draw_field():  # Растоновка поля
+def draw_field():  # Расстановка поля
     print('   | 0 | 1 | 2 |')  # Пишем верхние координаты
     print(' --------------- ')
     for i, row in enumerate(field):  # Чертим поле
@@ -20,7 +16,7 @@ def ask():  # Запрос координат для хода игрока
         x, y = move
 
         if not(x.isdigit()) or not (y.isdigit()):  # Проверяем, что в координаты ввели числа
-            print('Введите числовые координты от 0 до 2')
+            print('Введите числовые координаты от 0 до 2')
             continue
         x, y = int(x), int(y)
 
@@ -33,12 +29,12 @@ def ask():  # Запрос координат для хода игрока
             continue
         return x,y
 
-def end_game():
-    win = [((0, 0), (0, 1), (0, 2)), ((1, 0), (1, 1), (1, 2)),
+def end_game():  # Проверка условий окончания игры
+    win = [((0, 0), (0, 1), (0, 2)), ((1, 0), (1, 1), (1, 2)),  # Пишем комбинации для победы
            ((2, 0), (2, 1), (2, 2)), ((0, 0), (1, 0), (2, 0)),
            ((0, 1), (1, 1), (2, 1)), ((0, 2), (1, 2), (2, 2)),
            ((0, 0), (1, 1), (2, 2)), ((0, 2), (1, 1), (2, 0))]
-    for a in win:
+    for a in win:  # Проверяем наличие победной комбинации
         test_win =[]
         for b in a:
             test_win.append(field[b[0]][b[1]])
@@ -49,44 +45,34 @@ def end_game():
             print('Нолики выиграли!')
             return True
 
-    if '-' not in field[0] and '-' not in field[1] and '-' not in field[2]:
+    if '-' not in field[0] and '-' not in field[1] and '-' not in field[2]:  # Проверяем возможность ничьи
         print('Ничья!')
         return True
 
+print('Давайте же начнём игру в крестики-нолики!')
+field = [['-'] * 3 for i in range(3)]  # Создаём пустые ячейки
+queue = 0  # Заводим счетчик ходов
 draw_field()  # Расставляем поле
 print('Для хода введите номер столбца и строки через пробел соответственно')
 
 while True:  # Процесс игры
-    print('Ходят крестики')
-    x,y = ask()
-    field[x][y] = 'X'
+    queue += 1  # Обновляем счетчик ходов
+    if queue % 2 == 1:  # Проверка очередности ходов
+        print('Ходят крестики')
+    else:
+        print('Ходят нолики')
+    x,y = ask()  # Запрашиваем координаты у игрока
+    if queue % 2 == 1:  # Проставляем значение в ячейку в зависимости от очередности хода
+        field[x][y] = 'X'
+    else:
+        field[x][y] = 'O'
     draw_field()  # Расставляем поле
-    if end_game():
-        new_game = input('Желаете начать новую игру? Y - да, N - нет: ')  # Запрашиваем начало новой игры
+    if end_game():  # Запрашиваем начало новой игры
+        new_game = input('Желаете начать новую игру? Y - да, N - нет: ')
         if new_game == 'Y':
             field = [['-'] * 3 for i in range(3)]  # Обновляем пустые ячейки
             draw_field()  # Расставляем поле
-            continue
-        else:
-            break
-    elif '-' not in field[0] and '-' not in field[1] and '-' not in field[2]:
-        print('Ничья!')
-        new_game = input('Желаете начать новую игру? Y - да, N - нет: ')  # Запрашиваем начало новой игры
-        if new_game == 'Y':
-            field = [['-'] * 3 for i in range(3)]  # Обновляем пустые ячейки
-            draw_field()  # Расставляем поле
-            continue
-        else:
-            break
-    print('Ходят нолики')
-    x, y = ask()
-    field[x][y] = 'O'
-    draw_field()  # Расставляем поле
-    if end_game():
-        new_game = input('Желаете начать новую игру? Y - да, N - нет: ')  # Запрашиваем начало новой игры
-        if new_game == 'Y':
-            field = [['-'] * 3 for i in range(3)]  # Обновляем пустые ячейки
-            draw_field()  # Расставляем поле
+            queue = 0
             continue
         else:
             break
