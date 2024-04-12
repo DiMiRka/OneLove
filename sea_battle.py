@@ -69,7 +69,7 @@ class Board:  # Класс игрового поля
         return draw
 
     def out(self, b):  # Проверяем выходят ли координаты за поле
-        return not ((0 <= b.x < self.size - 1) and (0 <= b.y < self.size - 1))
+        return not ((0 <= b.x < self.size) and (0 <= b.y < self.size))
 
     def contour(self, ship, look=False):  # Делаем контур корабля
         near = [
@@ -77,9 +77,9 @@ class Board:  # Класс игрового поля
             (-1, 0), (0, 0), (1, 0),
             (-1, 1), (0, 1), (1, 1)
         ]
-        for i in ship.dots:
-            for ix, iy in near:
-                crd = Dot(i.x + ix, i.y + iy)
+        for d in ship.dots:
+            for dx, dy in near:
+                crd = Dot(d.x + dx, d.y + dy)
                 if crd not in self.busy and not (self.out(crd)):
                     if look and self.field[crd.x][crd.y] != 'X':
                         self.field[crd.x][crd.y] = '·'
@@ -173,19 +173,20 @@ class Game:
         #self.ai = AI(ai_board, us_board)
     def try_board(self):
         ship_lens = [3, 2, 2, 1, 1, 1, 1]
-        board = Board()
+        board = Board(size=self.size)
         attempts = 0
-        for i in ship_lens:
+        for lens in ship_lens:
             while True:
                 attempts += 1
                 if attempts > 1000:
                     return None
-                ship = Ship(Dot(randint(0, self.size - 1), randint(0, self.size - 1)), i, randint(0, 1))
+                new_ship = Ship(Dot(randint(0, self.size - 1), randint(0, self.size - 1)), lens, randint(0, 1))
                 try:
-                    board.add_ship(ship)
+                    board.add_ship(new_ship)
                     break
                 except BoardWrongShipExceptions:
                     pass
+        board.begin()
         return board
 
     #def random_board(self):
