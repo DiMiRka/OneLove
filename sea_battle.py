@@ -121,16 +121,18 @@ class Board:  # Класс игрового поля
             if ship.shoots(c):
                 ship.heart -= 1
                 self.field[c.x][c.y] = 'X'
-                print('Корабль ранен')
                 if ship.heart == 0:
                     self.living_ships -= 1
                     self.contour(ship, look=True)
                     print('Корабль уничтожен!')
                     return False
-            else:
-                self.field[c.x][c.y] = '·'
-                print('Мимо!')
-                return True
+                else:
+                    print('Корабль ранен')
+                    return True
+
+        self.field[c.x][c.y] = '·'
+        print('Мимо!')
+        return False
 
     def begin(self):
         self.busy = []
@@ -233,10 +235,11 @@ class Game:
         while True:
             print('-' * 23)
             print('Доска игрока')
-            #print(f'Живых кораблей {self.us.living_ship}')
+            print(f'Живых кораблей {self.us.board.living_ships}')
             print(self.us.board)
             print('-' * 23)
             print('Доска компьютера')
+            print(f'Живых кораблей {self.ai.board.living_ships}')
             print(self.ai.board)
             print('-' * 23)
             if num % 2 == 0:
@@ -263,6 +266,14 @@ class Game:
     def start(self):
         self.greet()
         self.loop()
+
+
+#b = Board()
+#sh_1 = Ship(Dot(1,1), 1, 0)
+#sh_2 = Ship(Dot(3,3), 3, 0)
+#b.add_ship(sh_1)
+#b.add_ship(sh_2)
+#sh_2.dotslist()
 
 
 g = Game()
