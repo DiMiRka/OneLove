@@ -90,8 +90,8 @@ class Board:  # Класс игровой доски
         for d in ship.dots:  # Проходим по координатам корабля
             for dx, dy in near:  # Проходим по списку контура
                 crd = Dot(d.x + dx, d.y + dy)  # Присваиваем координаты контура корабля
-                if crd not in self.busy and not (self.out(crd)):  # Добавляем контур в списоке занятых клеток доски
-                    if look and self.field[crd.x][crd.y] != 'X':  # Показываем контур и добавляем его координаты в список сделанных выстрелов доски (чтобы не допускать выстрелы по известому контуру)
+                if crd not in self.busy and not (self.out(crd)):  # Добавляем контур в список занятых клеток доски
+                    if look and self.field[crd.x][crd.y] != 'X':  # Показываем контур и добавляем его координаты в список сделанных выстрелов доски
                         self.field[crd.x][crd.y] = '·'
                         self.shots_taken.append(crd)
                     self.busy.append(crd)
@@ -108,6 +108,19 @@ class Board:  # Класс игровой доски
         self.contour(ship)  # Делаем контур корабля
         self.living_ships += 1  # Добавляем корабль в число живых кораблей доски
 
+    def num_ships(self):
+        ship_3 = 0
+        ship_2 = 0
+        ship_1 = 0
+        for ship in self.ships:
+            if ship.ship_size == 3:
+                ship_3 += 1
+            elif ship.ship_size == 2:
+                ship_2 += 1
+            else:
+                ship_1 += 1
+        return f'Трёхпалубных: {ship_3} \nДвухпалубных: {ship_2} \nОднопалубных: {ship_1}'
+
     def shot(self, c):  # Делаем выстрел
         if self.out(c):  # Проверяем не выходит ли выстрел за поле
             raise BoardOutExceptions()
@@ -118,10 +131,10 @@ class Board:  # Класс игровой доски
         self.shots_taken.append(c)  # Добавляем выстрел в список выстрелов доски
 
         for ship in self.ships:  # Проходим по списку кораблей доски
-            if ship.shoots(c): # Проверяем попадание выстрела в один из кораблей
+            if ship.shoots(c):  # Проверяем попадание выстрела в один из кораблей
                 ship.heart -= 1
                 self.field[c.x][c.y] = 'X'
-                if ship.heart == 0:  # Проверям добивание корабля
+                if ship.heart == 0:  # Проверяем добивание корабля
                     self.living_ships -= 1
                     self.contour(ship, look=True)
                     print('Корабль уничтожен!')
@@ -146,7 +159,7 @@ class Player:  # Общий класс игроков
         self.board = board  # Собственная доска
         self.board_2 = board_2  # Доска соперника
 
-    def ask(self):  # Делаем пустой метод запроса выстрела для дальнешейго полиморфизма дочерных классов
+    def ask(self):  # Делаем пустой метод запроса выстрела для дальнейшего полиморфизма дочерных классов
         raise NotImplementedError()
 
     def move(self):  # Делаем выстрел по запрошенным координатам
@@ -203,7 +216,7 @@ class Game:  # Класс логики самой игры
                 attempts += 1
                 if attempts > 2000:
                     return None
-                new_ship = Ship(Dot(randint(0, self.size - 1), randint(0, self.size - 1)), lens, randint(0, 1))  # Присвавыем случайные координаты кораблю
+                new_ship = Ship(Dot(randint(0, self.size - 1), randint(0, self.size - 1)), lens, randint(0, 1))  # Присваиваем случайные координаты кораблю
                 try:
                     board.add_ship(new_ship)  # Пробуем разместить корабль на поле
                     break
@@ -218,7 +231,7 @@ class Game:  # Класс логики самой игры
             board = self.try_board()
         return board
 
-    def greet(self):  # Печатаем привествие и краткую инструкцию
+    def greet(self):  # Печатаем приветствие и краткую инструкцию
         print('  -----------------------  ')
         print('  Добро пожаловать в игру  ')
         print('        Морской Бой        ')
@@ -236,10 +249,12 @@ class Game:  # Класс логики самой игры
             print('-' * 23)
             print('Доска игрока')
             print(f'Живых кораблей {self.us.board.living_ships}')
-            print(self.us.board, self.ai.board, sep=' ')
+            print(self.us.board.num_ships())
+            print(self.us.board)
             print('-' * 23)
             print('Доска компьютера')
             print(f'Живых кораблей {self.ai.board.living_ships}')
+            print(self.us.board.num_ships())
             print(self.ai.board)
             print('-' * 23)
             if num % 2 == 0:
@@ -254,14 +269,34 @@ class Game:  # Класс логики самой игры
             if self.ai.board.end():
                 print('-' * 23)
                 print('Игрок победил!')
-                break
+                if self.restart():
+                    continue
+                else:
+                    break
 
             if self.us.board.end():
                 print('-' * 23)
                 print('Компьютер победил!')
-                break
+                if self.restart():
+                    num = 0
+                    continue
+                else:
+                    break
 
             num += 1
+
+    def restart(self):  # Запрос новой игры
+        print('Желаете начать новую игру?')
+        a = input('Y = да, N - нет:\t')
+        if a == 'Y':
+            us_board = self.random_board()  # Обновляем доску пользователя
+            ai_board = self.random_board()  # Обновляем доску компьютера
+            ai_board.hid = True  # Скрываем корабли компьютера с доски
+            self.us = User(us_board, ai_board)  # Обновляем игрока пользователя
+            self.ai = AI(ai_board, us_board)  # Обновляем игрока компьютер
+            return True
+        else:
+            return False
 
     def start(self):  # Начинаем игру
         self.greet()
