@@ -108,17 +108,29 @@ class Board:  # Класс игровой доски
         self.contour(ship)  # Делаем контур корабля
         self.living_ships += 1  # Добавляем корабль в число живых кораблей доски
 
-    def num_ships(self):
+    def check_live(self, ship):  # Проверяем жизни корабля
+        live = None
+        for a in ship.dots:
+            if self.field[a.x][a.y] != 'X':
+                live = True
+            else:
+                live = False
+        return live
+
+    def num_ships_live(self):  # Считаем живые корабли по их размеру
         ship_3 = 0
         ship_2 = 0
         ship_1 = 0
         for ship in self.ships:
             if ship.ship_size == 3:
-                ship_3 += 1
+                if self.check_live(ship):
+                    ship_3 += 1
             elif ship.ship_size == 2:
-                ship_2 += 1
+                if self.check_live(ship):
+                    ship_2 += 1
             else:
-                ship_1 += 1
+                if self.check_live(ship):
+                    ship_1 += 1
         return f'Трёхпалубных: {ship_3} \nДвухпалубных: {ship_2} \nОднопалубных: {ship_1}'
 
     def shot(self, c):  # Делаем выстрел
@@ -232,31 +244,31 @@ class Game:  # Класс логики самой игры
         return board
 
     def greet(self):  # Печатаем приветствие и краткую инструкцию
-        print('  -----------------------  ')
+        print('-' * 27)
         print('  Добро пожаловать в игру  ')
         print('        Морской Бой        ')
-        print('  -----------------------  ')
+        print('-' * 27)
         print('      Формат хода: х y     ')
         print('      x - номер строки     ')
         print('      y - номер столбца    ')
         print('     Вводите координаты    ')
         print('        через пробел       ')
-        print('  -----------------------  ')
+        print('-' * 27)
 
     def loop(self):  # Отображение процесса игры
         num = 0
         while True:
-            print('-' * 23)
+            print('-' * 27)
             print('Доска игрока')
             print(f'Живых кораблей {self.us.board.living_ships}')
-            print(self.us.board.num_ships())
+            print(self.us.board.num_ships_live())
             print(self.us.board)
-            print('-' * 23)
+            print('-' * 27)
             print('Доска компьютера')
             print(f'Живых кораблей {self.ai.board.living_ships}')
-            print(self.us.board.num_ships())
+            print(self.ai.board.num_ships_live())
             print(self.ai.board)
-            print('-' * 23)
+            print('-' * 27)
             if num % 2 == 0:
                 print('Ходит игрок')
                 repeat = self.us.move()
@@ -267,7 +279,7 @@ class Game:  # Класс логики самой игры
                 num -= 1
 
             if self.ai.board.end():
-                print('-' * 23)
+                print('-' * 27)
                 print('Игрок победил!')
                 if self.restart():
                     continue
@@ -275,7 +287,7 @@ class Game:  # Класс логики самой игры
                     break
 
             if self.us.board.end():
-                print('-' * 23)
+                print('-' * 27)
                 print('Компьютер победил!')
                 if self.restart():
                     num = 0
